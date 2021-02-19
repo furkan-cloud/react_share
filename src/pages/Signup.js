@@ -4,11 +4,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useFormik } from "formik";
 import firebaseUtils from "../firebase/firebase.utils";
 import firebase from "../firebase/firebase.utils";
+import * as Yup from "yup";
 
 const stylesFunc = makeStyles({
   wrapper: {
     marginTop: "10rem",
   },
+});
+
+const signUpValidationSchema = Yup.object().shape({
+  displayName: Yup.string().required("Display name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(8, "Password is too short - should be 8 chars minimum"),
 });
 
 function Signup() {
@@ -19,9 +28,10 @@ function Signup() {
       email: "",
       password: "",
     },
+    validationSchema: signUpValidationSchema,
     onSubmit: (values) => {
       // alert(JSON.stringify(values, null, 2));
-      firebase.register(values.email, values.password);
+      firebase.register(values.displayName, values.email, values.password);
     },
   });
   const signupStyles = stylesFunc();
@@ -43,6 +53,8 @@ function Signup() {
               fullWidth
               value={formik.values.displayName}
               onChange={formik.handleChange}
+              error={formik.errors.displayName}
+              helperText={formik.errors.displayName}
             />
           </Grid>
           <Grid item xs={12}>
@@ -53,6 +65,8 @@ function Signup() {
               fullWidth
               value={formik.values.email}
               onChange={formik.handleChange}
+              error={formik.errors.email}
+              helperText={formik.errors.email}
             />
           </Grid>
           <Grid item xs={12}>
@@ -64,6 +78,8 @@ function Signup() {
               fullWidth
               value={formik.values.password}
               onChange={formik.handleChange}
+              error={formik.errors.password}
+              helperText={formik.errors.password}
             />
           </Grid>
           <Grid item xs={12}>
